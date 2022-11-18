@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pico w</title>
+</head>
+<body>
+    <h1>wireless ducky!!</h1>
+
+    <div>
+        <h3>send keystrokes:</h3>
+        <textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
+        <br>
+        <button onclick="submit()">submit</button>
+        <p id="status"></p>
+    </div>
+    </form>
+</body>
+<script>
+    function setStatus(text){
+        document.getElementById("status").innerHTML = text
+    }
+
+    function submit(){
+        let input = document.getElementById("keys-to-send").value
+        let to_send = []
+        let maxLength = 1300
+        input = input.split("\n")
+        input.forEach(e => {
+            if (e[0] === ">" && e.split(" ").length === 3){
+                tmp = e.split(" ")
+                to_send.push([tmp[1], tmp[2]])
+            }else{
+                to_send.push(e)
+            }
+        });
+
+        to_send = JSON.stringify({"keys":to_send})
+        if (to_send.length > maxLength){
+            setStatus(`Too large (>1300)! JSON encoded is ${to_send.length} bytes, max ${maxLength}.`)
+            return
+        }else{
+            setStatus(`Sending payload.`)
+        }
+        console.log(to_send)
+
+        fetch('/sendkeys', {
+        method: 'POST',
+        headers: {
+            'Accept': '*/*',
+            'User-Agent': to_send
+        },
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+        document.getElementById("keys-to-send").innerHTML = `hello,
+> GUI DOWN
+> TAB DOWN
+> TAB UP
+> GUI UP
+> SLEEP 1000
+world!
+`
+    })
+</script>
+</html>
