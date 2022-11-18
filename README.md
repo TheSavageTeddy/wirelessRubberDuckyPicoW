@@ -1,1 +1,2 @@
-# Wireless Rubber Ducky for Pico W
+# Wireless Rubber Ducky 
+### for Raspberry Pico W

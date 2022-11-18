@@ -9,6 +9,7 @@ import time
 import os
 import usb_hid
 import json
+import creds
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
@@ -23,8 +24,8 @@ note: if the filename is 'code.py', it is automatically ran when the pico W is p
 '''
 
 
-ssid = "SSID HERE"
-wifipassword = "WIFI PASSWORD HERE"
+ssid = creds.ssid
+wifipassword = creds.wifipassword
 
 
 print("Connecting to", ssid)
