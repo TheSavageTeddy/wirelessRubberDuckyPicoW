@@ -80,5 +80,4 @@ keyboard = Keyboard(usb_hid.devices)
 layout = KeyboardLayoutUS(keyboard)
 
 # serve the server
-server.request_buffer_size = 110000
 server.serve_forever(str(wifi.radio.ipv4_address))
