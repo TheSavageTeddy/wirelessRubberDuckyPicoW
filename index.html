@@ -60,8 +60,7 @@
         });
 
         let data = ascii_to_hex(JSON.stringify({"keys":to_send}))
-        console.log(data)
-        window.location.replace(`/sendkeys?keys=${data}`)
+        fetch(`/sendkeys?keys=${data}`, {method: 'GET'})
     }
 
     document.addEventListener("DOMContentLoaded", ()=>{
