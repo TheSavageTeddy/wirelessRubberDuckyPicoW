@@ -14,13 +14,35 @@
         <textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
         <br>
         <button onclick="submit()">submit</button>
-        <p id="status"></p>
+        <p id="status">Note: reloading may result in payloads being sent again.</p>
     </div>
-    </form>
+    <button onclick="terminate()">terminate server</button>
+    <div style="position: absolute; bottom: 0; left: 10px;">
+        <p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW">github</a></p>
+    </div>
 </body>
 <script>
+    function ascii_to_hex(str){
+        var arr1 = [];
+        for (var n = 0, l = str.length; n < l; n ++) 
+        {
+            var hex = Number(str.charCodeAt(n)).toString(16);
+            arr1.push(hex);
+        }
+        return arr1.join('');
+    }
+
     function setStatus(text){
         document.getElementById("status").innerHTML = text
+    }
+
+    function terminate(){
+        fetch('/terminate', {
+        method: 'POST',
+        headers: {
+            'Accept': '*/*',
+        },
+        })
     }
 
     function submit(){
@@ -37,22 +59,9 @@
             }
         });
 
-        to_send = JSON.stringify({"keys":to_send})
-        if (to_send.length > maxLength){
-            setStatus(`Too large (>1300)! JSON encoded is ${to_send.length} bytes, max ${maxLength}.`)
-            return
-        }else{
-            setStatus(`Sending payload.`)
-        }
-        console.log(to_send)
-
-        fetch('/sendkeys', {
-        method: 'POST',
-        headers: {
-            'Accept': '*/*',
-            'User-Agent': to_send
-        },
-        })
+        let data = ascii_to_hex(JSON.stringify({"keys":to_send}))
+        console.log(data)
+        window.location.replace(`/sendkeys?keys=${data}`)
     }
 
     document.addEventListener("DOMContentLoaded", ()=>{

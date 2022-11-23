@@ -2,7 +2,11 @@
 #webserver stuff
 import socketpool
 import wifi
-from adafruit_httpserver import HTTPServer, HTTPResponse
+from adafruit_httpserver.server import *
+from adafruit_httpserver.request import *
+from adafruit_httpserver.response import *
+from adafruit_httpserver.route import *
+
 
 #rubber ducky stuff
 import time
@@ -10,6 +14,7 @@ import os
 import usb_hid
 import json
 import creds
+import binascii
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
@@ -37,28 +42,17 @@ pool = socketpool.SocketPool(wifi.radio)
 server = HTTPServer(pool)
 
 
-@server.route("/")
-def base(request):  # pylint: disable=unused-argument
-    """Default reponse is /index.html"""
-    return HTTPResponse(filename="/index.html")
-
-@server.route("/sendkeys", "POST")
-def sendkeys(keys):
-    print(len(keys.raw_request))
-    print(bytes(keys.raw_request).decode())
-    keys = bytes(keys.raw_request).decode().split("\r\n")[6].replace("User-Agent: ","")
-    keys = json.loads(keys)
-    print(keys)
-
+def _sendkeys(keys: list):
     try:
-        for key in keys["keys"]:
+        for key in keys:
             if type(key) == str:
                 layout.write(key)
             elif type(key) == list:
-                print(key)
                 if key[0] == "SLEEP":
-                    print(f"SLEEPING for {key[1]}ms")
-                    time.sleep(float(key[1])/1000)
+                    try:
+                        time.sleep(float(key[1])/1000)
+                    except ZeroDivisionError:
+                        continue
                 else:
                     if key[1] == "DOWN":
                         keyboard.press(eval(f"Keycode.{key[0]}"))
@@ -66,6 +60,28 @@ def sendkeys(keys):
                         keyboard.release(eval(f"Keycode.{key[0]}"))
     except Exception as e:
         print(f"An error occured: {e}")
+
+
+@server.route("/")
+def base(request):  # pylint: disable=unused-argument
+    """Default reponse is /index.html"""
+    return HTTPResponse(filename="/index.html")
+
+@server.route("/sendkeys", "GET")
+def sendkeys(keys):
+    request = HTTPRequest(raw_request=keys.raw_request)
+    request_data = request.query_params
+    
+    try:
+        keys = binascii.unhexlify(request_data["keys"])
+        keys = json.loads(keys)
+        keys = keys["keys"]
+    except ValueError as e:
+        print(f"payload not sent: error {e}")
+        
+        return HTTPResponse(filename="/index.html")
+
+    _sendkeys(keys)
                     
     return HTTPResponse(filename="/index.html")
 
