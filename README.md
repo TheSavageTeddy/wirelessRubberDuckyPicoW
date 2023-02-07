@@ -19,7 +19,19 @@ First, clone the repository onto your computer. Then:
     - Click `submit` button to send the payload.
 8. To terminate the webserver, press `Terminate` button on the webpage. The server will crash itself, and will only be up again when the Pico W is restarted (such as plugged in again).
 
+# Additional
+
+You may want to hide the USB by preventing the Pico W from showing up as a USB drive when plugged into a victim's computer. If so, read carefully:
+- `boot.py`, which is ran before `code.py` when powered, contains code that will do so. **HOWEVER**, this will soft-lock the Pico W. **Also**, uncomment the line of code which does so. It's there to prevent accidentally soft-lock.
+- If you ever soft-lock it, you can either hold down the BOOTSEL button, and nuke the flash by dragging `flash_nuke.uf2` (from [here](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython)) into the Pico W drive, which will make it show up as a USB when configured again.
+- The other option is to exploit the RCE in the code, since the server will still run, so you may be able to edit contents of `boot.py` from that. See #TODO and have fun exploiting!
+
 ## TODO
+
+- It's possible to gain RCE because of how special keys are parsed. This should be fixed (or can serve as a backdoor if needed?? not a bug it's a feature)
+```py
+keyboard.press(eval(f"Keycode.{key[0]}"))
+```
 
 ## Contribution
 
