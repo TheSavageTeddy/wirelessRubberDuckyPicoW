@@ -7,21 +7,80 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>pico w</title>
 </head>
-
 <body>
 	<h1>wireless rubber ducky!!</h1>
-	<div>
-		<h3>send keystrokes:</h3>
-		<textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
-		<br>
-		<button onclick="submit()">submit</button>
+	<div class="x-center">
+		<div class="normal-div">
+			<h3>send keystrokes:</h3>
+			<textarea type="text" id="keys-to-send" class="monospace"></textarea>
+		</div>
+		<div class="normal-div">
+			<h1>usage:</h1>
+			<ul>
+				<li>Type normal text by just putting the text on a line, use special keys for newlines</li>
+					<ul>
+						Example: <span class="monospace">hello world</span> types "hello world"
+					</ul>
+				<li>For special keys (SHIFT, COMMAND, etc) use the format <span class="monospace">> KEY UP/DOWN</span>. Make sure there are spaces between >, KEY, and UP/DOWN</li>
+					<ul>
+						Example: <span class="monospace">> TAB DOWN</span> presses the TAB key down. Use <span class="monospace">> TAB UP</span> to release it
+					</ul>
+					<ul>
+						<a href="https://docs.circuitpython.org/projects/hid/en/latest/_modules/adafruit_hid/keycode.html" target="_blank">Here</a> is a full list of special keys.
+					</ul>
+				<li>There is a special SLEEP command that can be used to add delays, in milliseconds, in the format <span class="monospace">> SLEEP time-in-ms</span></li>
+					<ul>
+						Example: <span class="monospace">> SLEEP 1000</span> waits for 1000ms, or 1 second
+					</ul>
+				<li>To move the mouse, use MOUSE command <span class="monospace">> MOUSE x y</span> to move the mouse <span class="monospace">x</span> right and <span class="monospace">y</span> down.</li>
+					<ul>
+						Example: <span class="monospace">> MOUSE 1000 -500</span> moves the mouse right 1000, and up 500
+					</ul>
+				<li>To do a mouse click, use CLICK command <span class="monospace">> CLICK mouse_button</span></li>
+					<ul>
+						Example: <span class="monospace">> CLICK 1</span> performs a left click.
+					</ul>
+					<ul>
+						<span class="monospace">1</span> is left click
+					</ul>
+					<ul>
+						<span class="monospace">2</span> is right click
+					</ul>
+					<ul>
+						<span class="monospace">4</span> is middle click
+					</ul>
+			</ul>
+		</div>
 	</div>
+	<button onclick="submit()">submit</button>
 	<button onclick="terminate()">terminate server</button>
 	<p>check the <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a> for usage info</p>
 	<div style="position: absolute; bottom: 0; left: 10px;">
 		<p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a></p>
 	</div>
 </body>
+
+<style>
+.x-center {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.normal-div{
+	align-items: normal;
+}
+
+.monospace{
+	font-family: 'Courier New', Courier, monospace;
+}
+
+#keys-to-send {
+	width: 50vw;
+	height: 60vh;
+}
+
+</style>
 <script>
 function ascii_to_hex(str) {
 	var arr1 = [];
@@ -50,12 +109,12 @@ function submit() {
 	
 	let input = document.getElementById("keys-to-send").value
 	let to_send = []
-	let maxLength = 1300
 	input = input.split("\n")
 	input.forEach(e => {
-		if(e[0] === ">" && e.split(" ").length === 3) {
+		if(e[0] === ">" && (e.split(" ").length === 3 || e.split(" ").length === 4)) {
 			tmp = e.split(" ")
-			to_send.push([tmp[1], tmp[2]])
+			tmp.shift()
+			to_send.push(tmp)
 		} else {
 			to_send.push(e)
 		}
