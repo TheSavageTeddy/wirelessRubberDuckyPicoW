@@ -42,6 +42,6 @@ keyboard.press(eval(f"Keycode.{key[0]}"))
 Open any issues in the issues tab in github (not working, crashing, etc).
 Feel free to open pull requests that improves code / adds features / user experience.
 
-# DISCLAIMER
+## DISCLAIMER
 
 This is for educational purposes only, I am not responsible for any actions committed using this code.
