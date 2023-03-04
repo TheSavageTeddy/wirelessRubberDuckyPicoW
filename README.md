@@ -2,7 +2,9 @@
 
 ## Info
 
-This is a Rubber Ducky for Pico W that can be controlled wirelessly, over wifi (is there a name for this kind of rubber ducky?). Note that you need a **Raspberry Pico W**, not a Pico, as you need the wireless functionality in order to hose a webserver.
+This is a Rubber Ducky for Pico W that can be controlled wirelessly, over wifi (is there a name for this kind of rubber ducky?). Note that you need a **Raspberry Pico W**, not a Pico, as you need the wireless functionality in order to host a webserver.
+
+![](https://i.imgur.com/ecBBiUv.png)
 
 ## Installation & Usage
 First, clone the repository onto your computer. Then:
