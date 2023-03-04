@@ -17,6 +17,8 @@ First, clone the repository onto your computer. Then:
 7. Visit the IP address at port 80, to be prompted with a webpage. There, you can enter keystrokes to be sent:
     - To type text, simply type the text on the same line. Use special keys such as `> ENTER DOWN` for line breaks (see below).
     - To press special keys, the format is `> KEY UP/DOWN` such as `> TAB DOWN`. There is a special `> SLEEP <milliseconds>` command for delays. You can see all the available special keys [here](https://docs.circuitpython.org/projects/hid/en/latest/_modules/adafruit_hid/keycode.html).
+    - To move the mouse, use `> MOUSE x y` to move the mouse `x` right and `y` down, for example, `MOUSE 100 -50` moves the mouse 100 right and 50 up.
+    - To click, use `> CLICK button` to perform a mouse click, for example, `> CLICK 1` to left click. `1` is left click, `2` is right click, and `4` is middle click.
     - Seperate these per line. There is a default reverese shell payload you can use as reference.
     - Click `submit` button to send the payload.
 8. To terminate the webserver, press `Terminate` button on the webpage. The server will crash itself, and will only be up again when the Pico W is restarted (such as plugged in again).
