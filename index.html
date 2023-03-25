@@ -23,7 +23,10 @@
 					</ul>
 				<li>For special keys (SHIFT, COMMAND, etc) use the format <span class="monospace">> KEY UP/DOWN</span>. Make sure there are spaces between >, KEY, and UP/DOWN</li>
 					<ul>
-						Example: <span class="monospace">> TAB DOWN</span> presses the TAB key down. Use <span class="monospace">> TAB UP</span> to release it
+						Example: <span class="monospace">> TAB DOWN</span> presses the TAB key down.
+					</ul>
+					<ul>
+						Use <span class="monospace">> TAB UP</span> to release it
 					</ul>
 					<ul>
 						<a href="https://docs.circuitpython.org/projects/hid/en/latest/_modules/adafruit_hid/keycode.html" target="_blank">Here</a> is a full list of special keys.
@@ -32,23 +35,40 @@
 					<ul>
 						Example: <span class="monospace">> SLEEP 1000</span> waits for 1000ms, or 1 second
 					</ul>
-				<li>To move the mouse, use MOUSE command <span class="monospace">> MOUSE x y</span> to move the mouse <span class="monospace">x</span> right and <span class="monospace">y</span> down.</li>
+				<li>To use the mouse, such as clicking, dragging and moving, use MOUSE commands:</li>
+				<li>To MOVE the mouse:</li>
 					<ul>
-						Example: <span class="monospace">> MOUSE 1000 -500</span> moves the mouse right 1000, and up 500
-					</ul>
-				<li>To do a mouse click, use CLICK command <span class="monospace">> CLICK mouse_button</span></li>
-					<ul>
-						Example: <span class="monospace">> CLICK 1</span> performs a left click.
+						<span class="monospace">> MOUSE MOVE x y</span> moves the mouse <span class="monospace">x</span> right and <span class="monospace">y</span> down.
 					</ul>
 					<ul>
-						<span class="monospace">1</span> is left click
+						Example: <span class="monospace">> MOUSE MOVE 1000 -500</span> moves the mouse right 1000, and up 500
+					</ul>
+				<li>To CLICK the mouse:</li>
+					<ul>
+						<span class="monospace">> MOUSE CLICK mouse_button</span>
 					</ul>
 					<ul>
-						<span class="monospace">2</span> is right click
+						Example: <span class="monospace">> MOUSE CLICK 1</span> performs a left click.
+					</ul>
+				<li>To HOLD down a mouse button:</li>
+					<ul>
+						<span class="monospace">> MOUSE UP/DOWN mouse_button</span>
 					</ul>
 					<ul>
-						<span class="monospace">4</span> is middle click
+						Example: <span class="monospace">> MOUSE DOWN 1</span> holds down left click.
 					</ul>
+					<ul>
+						Example: <span class="monospace">> MOUSE UP 1</span> releases left click.
+					</ul>
+				<li>
+					<span class="monospace">1</span> is left mouse button
+				</li>
+				<li>
+					<span class="monospace">2</span> is right mouse button
+				</li>
+				<li>
+					<span class="monospace">4</span> is middle mouse button
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -111,7 +131,7 @@ function submit() {
 	let to_send = []
 	input = input.split("\n")
 	input.forEach(e => {
-		if(e[0] === ">" && (e.split(" ").length === 3 || e.split(" ").length === 4)) {
+		if(e[0] === ">") {
 			tmp = e.split(" ")
 			tmp.shift()
 			to_send.push(tmp)

@@ -43,41 +43,61 @@ print(f"Listening on http://{wifi.radio.ipv4_address}:80")
 pool = socketpool.SocketPool(wifi.radio)
 server = HTTPServer(pool)
 
+def _mouseMove(x, y):
+    print("moving mouse",x,y)
+    mouse.move(x=x, y=y)
+
+def _mouseClick(button):
+    mouse.click(button)
+
+def _mouseButton(button, release):
+    if release:
+        mouse.release(button)
+    else:
+        mouse.press(button)
+
+def _modifierKey(key, release):
+    print(key, release)
+    if release:
+        keyboard.release(eval(f"Keycode.{key}"))
+    else:
+        keyboard.press(eval(f"Keycode.{key}"))
 
 def _sendkeys(keys: list):
-    #print("keys", keys)
     try:
         for key in keys:
+            print(key)
             if type(key) == str:
+                # Write text by typing the string
                 layout.write(key)
             elif type(key) == list:
-                if key[0] == "MOUSE":
-                    try:
-                        mouse.move(x=int(key[1]), y=int(key[2]))
-                    except Exception as e:
-                        print("MOUSE error:", e)
-                        continue
-                elif key[0] == "CLICK":
-                    try:
-                        mouse.click(int(key[1]))
-                    except Exception as e:
-                        print("CLICK error:", e)
-                        continue
-                elif key[0] == "SLEEP":
-                    try:
-                        time.sleep(float(key[1])/1000)
-                    except ZeroDivisionError:
-                        print("SLEEP error cannot divide by 0, ignoring...")
-                        continue
-                else:
-                    try:
-                        if key[1] == "DOWN":
-                            keyboard.press(eval(f"Keycode.{key[0]}"))
+                command = key[0].upper()
+                if command == "MOUSE":
+                    mouse_command = key[1].upper()
+                    if mouse_command == "MOVE":
+                        x_pos = int(key[2])
+                        y_pos = int(key[3])
+                        _mouseMove(x_pos, y_pos)
+                    else:
+                        try:
+                            mouse_button = int(key[2])
+                        except IndexError:
+                            # some people might forget to put the mouse button, so default to left
+                            mouse_button = 1
+                        if mouse_command == "DOWN":
+                            _mouseButton(mouse_button, False)
+                        elif mouse_command == "UP":
+                            _mouseButton(mouse_button, True)
+                        elif mouse_command == "CLICK":
+                            _mouseClick(mouse_button)
                         else:
-                            keyboard.release(eval(f"Keycode.{key[0]}"))
-                    except Exception as e:
-                        print("KEYS error:", e)
-                        continue
+                            print(f"Mouse command {mouse_command} not found, ignoring...")
+                elif command == "SLEEP":
+                    time.sleep(float(key[1])/1000)
+                else:
+                    release = key[1].upper() == "UP"
+                    modifier_key = key[0].upper()
+                    _modifierKey(modifier_key, release)
     except Exception as e:
         print(f"An error occured: {e}")
 
@@ -107,7 +127,7 @@ def sendkeys(keys):
 
 @server.route("/terminate", "POST")
 def terminate(request):
-    exit(0)
+    exit(0) # apparently exit isn't even a function so it crashes anyways
     return
 
 

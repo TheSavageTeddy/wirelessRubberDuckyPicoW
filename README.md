@@ -4,6 +4,8 @@
 
 This is a Rubber Ducky for Pico W that can be controlled wirelessly, over wifi (is there a name for this kind of rubber ducky?). Note that you need a **Raspberry Pico W**, not a Pico, as you need the wireless functionality in order to host a webserver.
 
+A rubber ducky emulates a keyboard/mouse, sending keystrokes to the target computer. With this repo you can make your own using a Raspberry Pico W for just $6, and connect to it over Wifi, as it hosts a webserver where you can input commands to run and send keystrokes!
+
 ![](https://i.imgur.com/ecBBiUv.png)
 
 ## Installation & Usage
@@ -16,14 +18,23 @@ First, clone the repository onto your computer. Then:
 6. Now the wireless rubber ducky is done. Upon being powered, it should host a webserver at port 80. You can search for its IP address through `nmap your_local_ip/24 -p 80` and looking for a name such as `PicoW.lan` with port 80 open.
 7. Visit the IP address at port 80, to be prompted with a webpage. There, you can enter keystrokes to be sent:
     - To type text, simply type the text on the same line. Use special keys such as `> ENTER DOWN` for line breaks (see below).
-    - To press special keys, the format is `> KEY UP/DOWN` such as `> TAB DOWN`. There is a special `> SLEEP <milliseconds>` command for delays. You can see all the available special keys [here](https://docs.circuitpython.org/projects/hid/en/latest/_modules/adafruit_hid/keycode.html).
-    - To move the mouse, use `> MOUSE x y` to move the mouse `x` right and `y` down, for example, `MOUSE 100 -50` moves the mouse 100 right and 50 up.
-    - To click, use `> CLICK button` to perform a mouse click, for example, `> CLICK 1` to left click. `1` is left click, `2` is right click, and `4` is middle click.
-    - Seperate these per line. There is a default reverese shell payload you can use as reference.
-    - Click `submit` button to send the payload.
+    - To press special keys, the format is `> KEY UP/DOWN` such as `> TAB DOWN`.
+        - You can see all the available special keys [here](https://docs.circuitpython.org/projects/hid/en/latest/_modules/adafruit_hid/keycode.html).
+    - There is a special `> SLEEP <milliseconds>` command for delays.
+    - To use the mouse, such as clicking, dragging and moving, use MOUSE commands:
+        - To MOVE the mouse:
+            - `> MOUSE MOVE x y` moves the mouse x right and y down.
+            - Example: `> MOUSE MOVE 1000 -500` moves the mouse right 1000, and up 500
+        - To CLICK the mouse:
+            - `> MOUSE CLICK mouse_button`
+            - Example: `> MOUSE CLICK 1` performs a left click.
+        - To HOLD down a mouse button:
+            - `> MOUSE UP/DOWN mouse_button`
+            - Example: `> MOUSE DOWN 1` holds down left click.
+            - Example: `> MOUSE UP 1` releases left click.
 8. To terminate the webserver, press `Terminate` button on the webpage. The server will crash itself, and will only be up again when the Pico W is restarted (such as plugged in again).
 
-# Additional
+## Additional
 
 You may want to hide the USB by preventing the Pico W from showing up as a USB drive when plugged into a victim's computer. If so, read carefully:
 - `boot.py`, which is ran before `code.py` when powered, contains code that will do so. **HOWEVER**, this will soft-lock the Pico W. **Also**, uncomment the line of code which does so. It's there to prevent accidentally soft-lock.
@@ -34,8 +45,12 @@ You may want to hide the USB by preventing the Pico W from showing up as a USB d
 
 - It's possible to gain RCE because of how special keys are parsed. This should be fixed (or can serve as a backdoor if needed?? not a bug it's a feature)
 ```py
-keyboard.press(eval(f"Keycode.{key[0]}"))
+keyboard.press(eval(f"Keycode.{key}"))
 ```
+
+- Password protect the webserver so other people can't access it??
+
+- When software Pico W bluetooth support comes out, definetly going to look into making this bluetooth compatible (will be much easier to use, connecting to wifi is a hassle >.<)
 
 ## Contribution
 
