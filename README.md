@@ -48,6 +48,10 @@ You may want to hide the USB by preventing the Pico W from showing up as a USB d
 keyboard.press(eval(f"Keycode.{key}"))
 ```
 
+- this GUI is garbage, needs to be improved...
+
+- about the live textbox: add replay functionality? be able to record/replay same keys pressed again?
+
 - Password protect the webserver so other people can't access it??
 
 - When software Pico W bluetooth support comes out, definetly going to look into making this bluetooth compatible (will be much easier to use, connecting to wifi is a hassle >.<)

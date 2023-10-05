@@ -101,7 +101,6 @@ def _sendkeys(keys: list):
     except Exception as e:
         print(f"An error occured: {e}")
 
-
 @server.route("/")
 def base(request):  # pylint: disable=unused-argument
     """Default reponse is /index.html"""
@@ -125,6 +124,33 @@ def sendkeys(keys):
                     
     return HTTPResponse(filename="/index.html")
 
+@server.route("/sendsinglekey", "GET")
+def sendsinglekey(keys):
+    request = HTTPRequest(raw_request=keys.raw_request)
+    request_data = request.query_params
+    try:
+        key = binascii.unhexlify(request_data["key"])
+        keyType = "down" if key[1] == 0 else "up"
+    except Exception as e:
+        print(f"payload not sent: error {e}")
+        return HTTPResponse(body="", content_type="text/plain")
+    
+    try:
+        # structure: 1 byte for key, 1 byte for type
+        # 00 - key down
+        # 01 - key up
+        print(keyType, key)
+        if keyType == "up":
+            keyboard.release(key[0])
+        else:
+            keyboard.press(key[0])
+
+    except Exception as e:
+        print(f"key(s) not pressed: error {e}")
+        return HTTPResponse(body="", content_type="text/plain")
+
+    return HTTPResponse(body="", content_type="text/plain")
+
 @server.route("/terminate", "POST")
 def terminate(request):
     exit(0) # apparently exit isn't even a function so it crashes anyways
@@ -137,4 +163,4 @@ layout = KeyboardLayoutUS(keyboard)
 mouse = Mouse(usb_hid.devices)
 
 # serve the server
-server.serve_forever(str(wifi.radio.ipv4_address))
+server.serve_forever(str(wifi.radio.ipv4_address), 80)
